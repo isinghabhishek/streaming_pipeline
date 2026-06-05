@@ -1,0 +1,103 @@
+# ─── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.env
+
+# ─── Java / Scala / Maven / Gradle ────────────────────────────────────────────
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+hs_err_pid*
+
+# ─── Environment & Secrets ────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.secret
+secrets/
+
+# ─── Docker ───────────────────────────────────────────────────────────────────
+docker-compose.override.yml
+
+# ─── Delta Lake / Spark ───────────────────────────────────────────────────────
+storage/data/
+storage/checkpoints/
+spark-warehouse/
+derby.log
+metastore_db/
+*.parquet
+_delta_log/
+
+# ─── Flink ────────────────────────────────────────────────────────────────────
+flink-job/target/
+checkpoints/
+savepoints/
+
+# ─── dbt ──────────────────────────────────────────────────────────────────────
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+dbt/.user.yml
+
+# ─── Grafana ──────────────────────────────────────────────────────────────────
+grafana/data/
+
+# ─── Kafka / Schema Registry ──────────────────────────────────────────────────
+kafka-data/
+zookeeper-data/
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ─── Testing ──────────────────────────────────────────────────────────────────
+.pytest_cache/
+.hypothesis/
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+junit*.xml
+
+# ─── IDEs & Editors ───────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ─── Misc ─────────────────────────────────────────────────────────────────────
+*.tmp
+*.bak
+*.orig
