@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "DLQEvent",
+  "namespace": "com.pipeline",
+  "fields": [
+    { "name": "original_topic",     "type": "string" },
+    { "name": "original_partition", "type": "int" },
+    { "name": "original_offset",    "type": "long" },
+    { "name": "error_type",         "type": "string" },
+    { "name": "error_message",      "type": "string" },
+    { "name": "raw_bytes",          "type": "bytes" }
+  ]
+}
