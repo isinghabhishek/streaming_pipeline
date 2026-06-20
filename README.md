@@ -12,15 +12,15 @@ The following diagram illustrates the flow of data through the ingestion, messag
 graph TD
     %% Ingestion Sources
     subgraph Ingestion ["Ingestion Sources"]
-        IoT["IoT Simulator (Synthetic)"]
-        REST["REST API (Polling)"]
-        WS["WebSocket (Streaming)"]
+        IoT["IoT Simulator - Synthetic"]
+        REST["REST API - Polling"]
+        WS["WebSocket - Streaming"]
     end
 
     %% Python Producer
     subgraph ProducerService ["Python Producer Service"]
-        Adapters["Adapters (REST, IoT, WebSocket)"]
-        Publisher["Kafka Publisher (Avro / fastavro)"]
+        Adapters["Adapters - REST, IoT, WebSocket"]
+        Publisher["Kafka Publisher - Avro / fastavro"]
         Adapters -->|RawDataPoint| Publisher
     end
 
@@ -31,20 +31,20 @@ graph TD
 
     %% Schema Registry & Validation
     subgraph Registry ["Schema Management"]
-        SR["Confluent Schema Registry (v7.6.0)"]
-        SI["Schema Init Container (register_schemas.py)"]
-        SI -->|Registers & Checks Compatibility| SR
+        SR["Confluent Schema Registry v7.6.0"]
+        SI["Schema Init Container - register_schemas.py"]
+        SI -->|Registers and Checks Compatibility| SR
     end
 
     %% Kafka Message Broker
-    subgraph Broker ["Kafka Broker (KRaft Mode v3.6)"]
-        MainTopic["Event Topics (e.g., iot_simulator)"]
-        DLQTopic["DLQ Topics (e.g., iot_simulator.dlq)"]
+    subgraph Broker ["Kafka Broker - KRaft Mode v3.6"]
+        MainTopic["Event Topics - e.g. iot_simulator"]
+        DLQTopic["DLQ Topics - e.g. iot_simulator.dlq"]
     end
 
     %% Schema checking and publishing
     Publisher -.->|Uses schema definitions| SR
-    Publisher -->|Publish event (Avro)| MainTopic
+    Publisher -->|Publish event as Avro| MainTopic
     Publisher -->|Failure DLQ Routing| DLQTopic
 
     %% Processing
@@ -56,16 +56,16 @@ graph TD
 
     %% Storage
     subgraph Storage ["Storage Lakehouse"]
-        SparkThrift["Spark Thrift Server (v3.5)"]
-        DeltaLake[("Delta Lake Tables (delta_data volume)")]
-        FlinkTM -->|Write Stream & Checkpoints| DeltaLake
+        SparkThrift["Spark Thrift Server v3.5"]
+        DeltaLake[("Delta Lake Tables")]
+        FlinkTM -->|Write Stream and Checkpoints| DeltaLake
         SparkThrift -->|Query / Interface| DeltaLake
     end
 
     %% Analytics & Transformations
-    subgraph Analytics ["Analytics & Visualisation"]
-        DBT["dbt Runner (Cron: dbt-spark)"]
-        Grafana["Grafana Dashboard (Port 3000)"]
+    subgraph Analytics ["Analytics and Visualisation"]
+        DBT["dbt Runner - Cron: dbt-spark"]
+        Grafana["Grafana Dashboard - Port 3000"]
         DBT -->|Transform / Model| SparkThrift
         Grafana -->|Query Metrics| SparkThrift
     end
