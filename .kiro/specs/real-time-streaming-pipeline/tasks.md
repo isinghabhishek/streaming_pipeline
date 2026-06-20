@@ -72,7 +72,7 @@ Implement the pipeline incrementally: project scaffolding and Docker Compose fir
     - Test missing env var exit behavior
     - _Requirements: 1.4, 8.2, 9.1, 10.5_
 
-- [ ] 4. Checkpoint — Ensure all Producer tests pass
+- [x] 4. Checkpoint — Ensure all Producer tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 5. Implement the Flink Stream Processor
