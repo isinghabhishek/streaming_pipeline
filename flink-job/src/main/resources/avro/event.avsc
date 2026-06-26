@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "Event",
+  "namespace": "com.pipeline",
+  "fields": [
+    { "name": "event_id",  "type": "string" },
+    { "name": "source",    "type": "string" },
+    { "name": "timestamp", "type": "string" },
+    { "name": "payload",   "type": { "type": "map", "values": "string" } }
+  ]
+}
