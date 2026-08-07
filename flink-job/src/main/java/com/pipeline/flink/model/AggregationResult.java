@@ -25,8 +25,8 @@ public class AggregationResult implements Serializable {
     public AggregationResult(Instant windowStart, Instant windowEnd, String source,
                              long eventCount, double metricSum, double metricAvg,
                              Instant writtenAt) {
-        this.windowStart = Objects.requireNonNull(windowStart);
-        this.windowEnd   = Objects.requireNonNull(windowEnd);
+        this.windowStart = windowStart;   // may be null until WindowResultFunction fills it in
+        this.windowEnd   = windowEnd;     // may be null until WindowResultFunction fills it in
         this.source      = Objects.requireNonNull(source);
         this.eventCount  = eventCount;
         this.metricSum   = metricSum;
