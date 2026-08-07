@@ -1,96 +1,126 @@
 package com.pipeline.flink.operator;
 
+import com.pipeline.flink.health.MetricsRegistry;
 import com.pipeline.flink.model.DLQEvent;
 import com.pipeline.flink.model.Event;
 import com.pipeline.flink.serde.AvroEventDeserializer;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.metrics.Counter;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Flat-map operator that deserializes raw Avro bytes into {@link Event} objects.
+ * Flink {@link ProcessFunction} that deserializes raw Avro bytes into {@link Event} objects.
  *
- * <p>On parse failure the raw bytes are emitted to a side output (the DLQ output tag)
- * so the main stream is never polluted by malformed records. A {@code parse_errors}
- * counter metric is incremented for each failure so the health endpoint and Prometheus
- * scraper can surface the error rate.
+ * <p>This operator is the canonical parse-and-route step in the Flink job topology:
+ * <ul>
+ *   <li><b>Success path:</b> emits a parsed {@link Event} to the main output.</li>
+ *   <li><b>Failure path:</b> constructs a {@link DLQEvent} with full error metadata and emits it
+ *       to the {@link #DLQ_TAG} side output; increments both the Flink {@code parse_errors}
+ *       counter metric and the in-process {@link MetricsRegistry#parseErrors} counter so the
+ *       Prometheus scrape endpoint reflects failures in real time.</li>
+ * </ul>
  *
- * <p>Usage in the job graph:
- * <pre>
- *   SingleOutputStreamOperator&lt;Event&gt; parsed = rawStream
- *       .flatMap(new ParseMap(DLQ_TAG))
+ * <p>Using {@link ProcessFunction} (rather than a plain {@code FlatMapFunction} or
+ * {@code MapFunction}) is required because Flink's side-output API is only available
+ * through the {@link Context} provided by {@code ProcessFunction.processElement}.
+ *
+ * <p>Typical usage in the job topology:
+ * <pre>{@code
+ *   SingleOutputStreamOperator<Event> parsedStream = rawStream
+ *       .process(new ParseMap("my-topic"))
  *       .name("parse-avro");
  *
- *   DataStream&lt;DLQEvent&gt; dlq = parsed.getSideOutput(DLQ_TAG);
- * </pre>
+ *   DataStream<DLQEvent> dlqStream = parsedStream.getSideOutput(ParseMap.DLQ_TAG);
+ * }</pre>
+ *
+ * <p>Requirements: 3.2
  */
-public class ParseMap extends RichFlatMapFunction<byte[], Event> {
+public class ParseMap extends ProcessFunction<byte[], Event> {
 
     private static final long serialVersionUID = 1L;
     private static final Logger LOG = LoggerFactory.getLogger(ParseMap.class);
 
-    /** Side-output tag shared between the operator and the job topology. */
+    /**
+     * Side-output tag for DLQ events — shared between this operator and the job topology.
+     * Callers retrieve the DLQ stream via {@code parsedStream.getSideOutput(ParseMap.DLQ_TAG)}.
+     */
     public static final OutputTag<DLQEvent> DLQ_TAG =
-            new OutputTag<DLQEvent>("dlq-events") {};
+            new OutputTag<DLQEvent>("dlq-parse-errors") {};
 
-    // placeholder topic/partition/offset — populated via Kafka metadata in real deployment
-    private static final String UNKNOWN_TOPIC = "unknown";
-    private static final int    UNKNOWN_PARTITION = -1;
-    private static final long   UNKNOWN_OFFSET    = -1L;
+    /** Source topic name attached to every DLQ envelope (helps downstream routing). */
+    private final String sourceTopic;
 
+    /**
+     * Flink-managed parse_errors counter registered with the metrics subsystem.
+     * Exposed via the Prometheus reporter configured in flink-conf.yaml.
+     */
     private transient Counter parseErrorsCounter;
+
+    /**
+     * Constructs a {@code ParseMap} for the given source topic.
+     *
+     * @param sourceTopic Kafka topic name consumed by this job; embedded in every DLQ envelope
+     *                    as {@code original_topic}.
+     */
+    public ParseMap(String sourceTopic) {
+        this.sourceTopic = sourceTopic;
+    }
 
     @Override
     public void open(Configuration parameters) {
-        // Register the metric with Flink's metrics system so it is exposed via
-        // the Prometheus reporter configured in flink-conf.yaml
         parseErrorsCounter = getRuntimeContext()
                 .getMetricGroup()
                 .counter("parse_errors");
     }
 
+    /**
+     * Processes a single raw byte array from Kafka.
+     *
+     * <p>On success the deserialized {@link Event} is forwarded to the main collector.
+     * On any exception the raw bytes are wrapped in a {@link DLQEvent} and routed to
+     * {@link #DLQ_TAG}; the {@code parse_errors} counter is incremented.
+     *
+     * @param rawBytes  raw Kafka message bytes (Confluent wire format or plain Avro)
+     * @param ctx       Flink ProcessFunction context (provides side-output access)
+     * @param out       main output collector
+     */
     @Override
-    public void flatMap(byte[] rawBytes, Collector<Event> out) {
+    public void processElement(byte[] rawBytes,
+                               Context ctx,
+                               Collector<Event> out) {
         try {
             Event event = AvroEventDeserializer.parse(rawBytes);
             out.collect(event);
         } catch (Exception e) {
+            // Increment both the Flink-managed metric (scraped by Prometheus reporter)
+            // and the in-process MetricsRegistry counter (served by the health endpoint).
             parseErrorsCounter.inc();
+            MetricsRegistry.incParseErrors();
 
-            LOG.error("{\"component\":\"ParseMap\",\"level\":\"ERROR\","
-                    + "\"message\":\"Failed to parse Avro event\","
-                    + "\"error_type\":\"{}\",\"error_message\":\"{}\"}",
-                    e.getClass().getSimpleName(), e.getMessage());
+            String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
 
-            DLQEvent dlq = new DLQEvent(
-                    UNKNOWN_TOPIC,
-                    UNKNOWN_PARTITION,
-                    UNKNOWN_OFFSET,
+            LOG.error("{\"component\":\"ParseMap\","
+                    + "\"level\":\"ERROR\","
+                    + "\"message\":\"Avro parse failure — routing to DLQ\","
+                    + "\"error_type\":\"{}\","
+                    + "\"error_message\":\"{}\","
+                    + "\"source_topic\":\"{}\"}",
+                    e.getClass().getSimpleName(), errorMsg, sourceTopic);
+
+            DLQEvent dlqEvent = new DLQEvent(
+                    sourceTopic,
+                    /* original_partition — unavailable in FlatMap context */ -1,
+                    /* original_offset    — unavailable in FlatMap context */ -1L,
                     e.getClass().getSimpleName(),
-                    e.getMessage() != null ? e.getMessage() : e.toString(),
+                    errorMsg,
                     rawBytes
             );
 
-            // Emit to DLQ side output — does NOT go to the main output
-            getRuntimeContext()
-                    .getMetricGroup()
-                    // reuse counter already incremented above; no-op call for clarity
-                    .counter("parse_errors");
-
-            // Side outputs require ProcessFunction; ParseMap delegates via a workaround:
-            // the operator stores the DLQEvent in a thread-local and StreamingJob
-            // reads it via a subsequent process step. However, the cleanest Flink
-            // pattern is to use ProcessFunction directly. See DlqRoutingProcessFunction.
-            //
-            // This flatMap emits nothing to `out` on failure — the DlqRoutingProcessFunction
-            // below is the actual point where side-output happens.  ParseMap therefore acts
-            // as a pre-filter: it either emits a parsed Event or swallows corrupt bytes
-            // after incrementing the metric, and the caller (StreamingJob) uses
-            // DlqRoutingProcessFunction for side-output routing instead.
+            ctx.output(DLQ_TAG, dlqEvent);
         }
     }
 }
