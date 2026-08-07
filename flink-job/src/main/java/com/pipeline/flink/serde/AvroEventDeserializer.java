@@ -95,7 +95,7 @@ public class AvroEventDeserializer implements DeserializationSchema<byte[]> {
      * Strips the 5-byte Confluent Schema Registry wire-format header if present.
      * Header: [0x00][4-byte big-endian schema-id]
      */
-    static byte[] stripConfluentHeader(byte[] bytes) {
+    public static byte[] stripConfluentHeader(byte[] bytes) {
         if (bytes.length > 5 && bytes[0] == 0x00) {
             byte[] payload = new byte[bytes.length - 5];
             System.arraycopy(bytes, 5, payload, 0, payload.length);
