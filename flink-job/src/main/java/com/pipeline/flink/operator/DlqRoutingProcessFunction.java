@@ -1,9 +1,9 @@
 package com.pipeline.flink.operator;
 
+import com.pipeline.flink.health.MetricsRegistry;
 import com.pipeline.flink.model.DLQEvent;
 import com.pipeline.flink.model.Event;
 import com.pipeline.flink.serde.AvroEventDeserializer;
-import org.apache.flink.api.common.functions.RichFunction;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.metrics.Counter;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
@@ -56,6 +56,7 @@ public class DlqRoutingProcessFunction extends ProcessFunction<byte[], Event> {
             out.collect(event);
         } catch (Exception e) {
             parseErrorsCounter.inc();
+            MetricsRegistry.incParseErrors();
 
             String errorMsg = e.getMessage() != null ? e.getMessage() : e.toString();
 
