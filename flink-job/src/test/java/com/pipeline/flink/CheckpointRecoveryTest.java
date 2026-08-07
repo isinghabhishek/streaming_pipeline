@@ -130,10 +130,14 @@ class CheckpointRecoveryTest {
         OperatorSubtaskState snapshot = harness.snapshot(1L, ts + splitAt);
         harness.close();
 
-        // Phase 2: restore and process remainder
-        KeyedOneInputStreamOperatorTestHarness<String, Event, Event> restored = openHarness();
-        restored.initializeState(snapshot);
+        // Phase 2: restore from snapshot (initializeState MUST come before open)
+        EventDeduplicator dedup = new EventDeduplicator(WINDOW_SECONDS);
+        KeyedProcessOperator<String, Event, Event> op = new KeyedProcessOperator<>(dedup);
+        KeyedOneInputStreamOperatorTestHarness<String, Event, Event> restored =
+                new KeyedOneInputStreamOperatorTestHarness<>(op, Event::getEventId, Types.STRING);
+        restored.initializeState(snapshot);  // must be called before open()
         restored.open();
+
         for (int i = splitAt; i < stream.size(); i++) {
             restored.processElement(stream.get(i), ts + i);
         }
