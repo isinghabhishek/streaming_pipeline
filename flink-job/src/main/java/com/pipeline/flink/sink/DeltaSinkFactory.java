@@ -57,16 +57,16 @@ public class DeltaSinkFactory {
      * Columns: event_id, source, timestamp, date (partition), payload, ingested_at
      */
     public static RowType rawEventsRowType() {
-        return RowType.of(
-                new VarCharType(VarCharType.MAX_LENGTH),   // event_id
-                new VarCharType(VarCharType.MAX_LENGTH),   // source
-                new TimestampType(3),                       // timestamp
-                new VarCharType(10),                        // date  (yyyy-MM-dd, partition col)
-                new MapType(                                // payload map<string,string>
+        return new RowType(java.util.Arrays.asList(
+                new RowType.RowField("event_id",    new VarCharType(VarCharType.MAX_LENGTH)),
+                new RowType.RowField("source",      new VarCharType(VarCharType.MAX_LENGTH)),
+                new RowType.RowField("timestamp",   new TimestampType(3)),
+                new RowType.RowField("date",        new VarCharType(10)),
+                new RowType.RowField("payload",     new MapType(
                         new VarCharType(VarCharType.MAX_LENGTH),
-                        new VarCharType(VarCharType.MAX_LENGTH)),
-                new TimestampType(3)                        // ingested_at
-        );
+                        new VarCharType(VarCharType.MAX_LENGTH))),
+                new RowType.RowField("ingested_at", new TimestampType(3))
+        ));
     }
 
     /**
@@ -125,13 +125,13 @@ public class DeltaSinkFactory {
      */
     public static RowType aggregationsRowType() {
         return RowType.of(
-                new TimestampType(3),                       // window_start  (partition col)
-                new TimestampType(3),                       // window_end
-                new VarCharType(VarCharType.MAX_LENGTH),   // source        (partition col)
-                new BigIntType(),                           // event_count
-                new DoubleType(),                           // metric_sum
-                new DoubleType(),                           // metric_avg
-                new TimestampType(3)                        // written_at
+                new RowType.RowField("window_start", new TimestampType(3)),
+                new RowType.RowField("window_end",   new TimestampType(3)),
+                new RowType.RowField("source",       new VarCharType(VarCharType.MAX_LENGTH)),
+                new RowType.RowField("event_count",  new BigIntType()),
+                new RowType.RowField("metric_sum",   new DoubleType()),
+                new RowType.RowField("metric_avg",   new DoubleType()),
+                new RowType.RowField("written_at",   new TimestampType(3))
         );
     }
 
