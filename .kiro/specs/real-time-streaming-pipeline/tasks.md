@@ -76,15 +76,15 @@ Implement the pipeline incrementally: project scaffolding and Docker Compose fir
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 5. Implement the Flink Stream Processor
-  - [ ] 5.1 Set up the Flink Maven/Gradle project in `flink-job/` with dependencies: Flink Kafka connector, Flink Delta connector, jqwik
+  - [x] 5.1 Set up the Flink Maven/Gradle project in `flink-job/` with dependencies: Flink Kafka connector, Flink Delta connector, jqwik
     - _Requirements: 3.1_
-  - [ ] 5.2 Implement `KafkaSource` configuration with consumer group, committed offsets per partition, and event-time watermark strategy based on the `timestamp` field
+  - [x] 5.2 Implement `KafkaSource` configuration with consumer group, committed offsets per partition, and event-time watermark strategy based on the `timestamp` field
     - _Requirements: 3.1, 3.2_
-  - [ ] 5.3 Implement `ParseMap` operator that deserializes Avro events; on parse failure, routes to DLQ and increments `parse_errors` counter
+  - [x] 5.3 Implement `ParseMap` operator that deserializes Avro events; on parse failure, routes to DLQ and increments `parse_errors` counter
     - _Requirements: 3.2_
-  - [ ] 5.4 Implement `AggregateFunction` for tumbling-window aggregations (count, sum, avg) with configurable window size (10–300 s); emit result when watermark advances past window boundary
+  - [x] 5.4 Implement `AggregateFunction` for tumbling-window aggregations (count, sum, avg) with configurable window size (10–300 s); emit result when watermark advances past window boundary
     - _Requirements: 3.3, 3.4_
-  - [ ]* 5.5 Write property test for windowed aggregation correctness (Property 6)
+  - [x]* 5.5 Write property test for windowed aggregation correctness (Property 6)
     - **Property 6: Windowed aggregation correctness and emission**
     - Use jqwik to generate random event sets and window sizes 10–300 s; assert emitted aggregation equals mathematically correct value
     - Tag: `# Feature: real-time-streaming-pipeline, Property 6: Windowed aggregation correctness and emission`
@@ -105,7 +105,7 @@ Implement the pipeline incrementally: project scaffolding and Docker Compose fir
     - Use jqwik to generate random event sequences with injected mid-stream failures; assert final Table Store state equals uninterrupted processing
     - Tag: `# Feature: real-time-streaming-pipeline, Property 7: Checkpoint recovery preserves exactly-once semantics`
     - **Validates: Requirements 3.7, 4.1, 4.2**
-  - [ ] 5.10 Implement the health HTTP endpoint on port 8081 returning 200 when running, 503 when stopped or in error state
+  - [x] 5.10 Implement the health HTTP endpoint on port 8081 returning 200 when running, 503 when stopped or in error state
     - Expose Prometheus-compatible metrics: records consumed/s, records written/s, checkpoint duration, processing lag per partition
     - _Requirements: 3.8, 9.2_
 

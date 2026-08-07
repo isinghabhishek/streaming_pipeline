@@ -1,0 +1,211 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "5.1 Set up the Flink Maven/Gradle project in `flink-job/` with dependencies: Flink Kafka connector, Flink Delta connector, jqwik": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389022590
+      },
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389037700
+      },
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389553464
+      }
+    ],
+    "5.2 Implement `KafkaSource` configuration with consumer group, committed offsets per partition, and event-time watermark strategy based on the `timestamp` field": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389024398
+      },
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389571781
+      },
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784390575596
+      }
+    ],
+    "5.3 Implement `ParseMap` operator that deserializes Avro events; on parse failure, routes to DLQ and increments `parse_errors` counter": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389024683
+      },
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784390584854
+      },
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784391329214
+      }
+    ],
+    "5.4 Implement `AggregateFunction` for tumbling-window aggregations (count, sum, avg) with configurable window size (10–300 s); emit result when watermark advances past window boundary": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389025007
+      },
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784391339241
+      },
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784391710841
+      }
+    ],
+    "5.6 Implement `DeltaSink` for `raw_events` and `aggregations` tables using the Flink Delta connector with two-phase commit (exactly-once)": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389025164
+      },
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784391835609
+      }
+    ],
+    "5.8 Configure Flink checkpointing: interval from `CHECKPOINT_INTERVAL_MS`, save to durable volume, complete within 30 s; transition job to FAILED after 3 consecutive checkpoint failures": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389025314
+      }
+    ],
+    "6. Checkpoint — Ensure all Flink job tests pass": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389025460
+      }
+    ],
+    "7.1 Write PySpark initialization script (`storage/init_tables.py`) that creates `raw_events` and `aggregations` Delta tables with the defined schemas and partition columns": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389025653
+      }
+    ],
+    "7.2 Verify ACID transaction support and configure table properties: `delta.logRetentionDuration = interval 7 days`, optimistic concurrency control": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389026097
+      }
+    ],
+    "8.1 Write `dbt/models/staging/stg_raw_events.sql` — light cleaning of `raw_events` (cast types, filter nulls)": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389026346
+      }
+    ],
+    "8.2 Write `dbt/models/marts/events_per_minute.sql` — per-source event counts per minute, writing to a dedicated schema without touching `raw_events`": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389026507
+      }
+    ],
+    "8.3 Write dbt data tests in `dbt/tests/`: not-null `event_id`, unique `event_id` within partition, `timestamp` within valid range; configure dbt to exit non-zero on test failure and log test name + row count": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389026659
+      }
+    ],
+    "8.4 Write the cron scheduler entry in `docker-compose.yml` that runs `dbt run && dbt test` every 5 minutes": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389026810
+      }
+    ],
+    "9.1 Write Grafana datasource provisioning file `grafana/provisioning/datasources/delta.yaml` pointing to the Spark Thrift Server": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389026975
+      }
+    ],
+    "9.2 Write `grafana/provisioning/dashboards/pipeline.json` with panels: events ingested per minute, processing latency (p50/p95), aggregated metric values per source, DLQ event count": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389027106
+      }
+    ],
+    "9.3 Add alert rule to the dashboard JSON: trigger when DLQ event count > 10 within a 5-minute window": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389027263
+      }
+    ],
+    "10.1 Write `scripts/seed.py` — generates synthetic Avro-conformant events and publishes them directly to Kafka; accepts a configurable event count argument": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389027572
+      }
+    ],
+    "10.2 Write `scripts/reprocess_dlq.py` — reads from the DLQ topic, attempts schema correction, republishes corrected events to the original topic, logs each reprocessed event": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389027930
+      }
+    ],
+    "11.1 Write `README.md` with: step-by-step setup instructions, architecture diagram description, and explanation of the exactly-once semantics implementation": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389028096
+      }
+    ],
+    "11.2 Write smoke tests (`tests/smoke/`) that assert: Schema Registry has registered schemas for each topic, Event Avro schema contains required fields, DLQ topic exists with retention ≥ 72 h, Grafana provisioning files exist with required panel titles and alert rule, `docker-compose.yml` contains all required service definitions": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389028250
+      }
+    ],
+    "12. Final checkpoint — Ensure all tests pass": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784389028396
+      }
+    ],
+    "5.10 Implement the health HTTP endpoint on port 8081 returning 200 when running, 503 when stopped or in error state": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784391790246
+      }
+    ],
+    "5.5 Write property test for windowed aggregation correctness (Property 6)": [
+      {
+        "executionId": "7b4a6129-2537-4f61-b8fb-47bc84cc791f",
+        "chatSessionId": "sess_b5280b4a-6666-422e-9964-57fb969dc2d7",
+        "timestamp": 1784391824571
+      }
+    ]
+  }
+}
