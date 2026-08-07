@@ -280,6 +280,18 @@
           <systemPropertyVariables>
             <jqwik.tries.default>100</jqwik.tries.default>
           </systemPropertyVariables>
+          <!--
+            Java 17 module system: Flink's test harness uses reflection to access
+            java.util internals (e.g. Arrays$ArrayList). These opens are required
+            for KeyedOneInputStreamOperatorTestHarness to function correctly.
+          -->
+          <argLine>
+            --add-opens java.base/java.util=ALL-UNNAMED
+            --add-opens java.base/java.lang=ALL-UNNAMED
+            --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+            --add-opens java.base/java.io=ALL-UNNAMED
+            --add-opens java.rmi/sun.rmi.transport=ALL-UNNAMED
+          </argLine>
         </configuration>
       </plugin>
 
