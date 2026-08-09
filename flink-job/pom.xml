@@ -23,7 +23,7 @@
     <flink.version>1.18.1</flink.version>
     <scala.binary.version>2.12</scala.binary.version>
     <kafka.version>3.6.1</kafka.version>
-    <avro.version>1.11.3</avro.version>
+    <avro.version>1.11.4</avro.version>
     <delta.version>3.0.0</delta.version>
     <hadoop.version>3.3.6</hadoop.version>
 
@@ -31,7 +31,7 @@
     <jqwik.version>1.8.2</jqwik.version>
     <junit.platform.version>1.10.2</junit.platform.version>
     <junit.jupiter.version>5.10.2</junit.jupiter.version>
-    <assertj.version>3.25.3</assertj.version>
+    <assertj.version>3.27.7</assertj.version>
     <mockito.version>5.10.0</mockito.version>
     <slf4j.version>1.7.36</slf4j.version>
   </properties>
@@ -173,7 +173,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.16.1</version>
+      <version>2.22.0</version>
     </dependency>
 
     <!-- ================================================================
