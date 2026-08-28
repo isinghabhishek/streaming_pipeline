@@ -23,7 +23,7 @@
     <flink.version>1.18.1</flink.version>
     <scala.binary.version>2.12</scala.binary.version>
     <kafka.version>3.6.1</kafka.version>
-    <avro.version>1.11.4</avro.version>
+    <avro.version>1.12.1</avro.version>
     <delta.version>3.0.0</delta.version>
     <hadoop.version>3.3.6</hadoop.version>
 
@@ -173,7 +173,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.22.0</version>
+      <version>2.22.1</version>
     </dependency>
 
     <!-- ================================================================
